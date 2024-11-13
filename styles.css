@@ -65,6 +65,16 @@ h2 {
     margin: 5px; /* 위아래, 좌우 모두 20px 여백 */
 }
 
+.bold-link {
+    font-weight: bold;  /* 볼드 처리 */
+    color: inherit;     /* 기본 텍스트 색상 유지 */
+    text-decoration: none;  /* 링크 밑줄 제거 */
+}
+
+.bold-link:hover {
+    text-decoration: underline;  /* 호버 시 밑줄 추가 */
+}
+
 
 /* 버전 정보 */
 .version-info {
@@ -120,11 +130,13 @@ h2 {
     color: var(--button-text-color);
     cursor: pointer;
     transition: background 0.3s, color 0.3s;
+    transition: transform 0.2s ease; /* 확대 효과 */
     position: relative;
 }
 
 .preset-button:hover {
     background-color: var(--button-bg-hover);
+    transform: scale(1.03); /* 확대 */
 }
 
 /* 선택된 프리셋 버튼 */
@@ -137,6 +149,10 @@ h2 {
 .selected-preset:hover {
     background-color: #b3ff00; /* 선택된 버튼의 호버 배경색 */
     color: #000000; /* 선택된 버튼의 호버 텍스트 색상 */
+}
+
+.selected-preset:active {
+    transform: scale(1.01); /* 클릭 시 1.02배 축소 */
 }
 
 /* 프리셋 툴팁 */
@@ -204,12 +220,35 @@ h2 {
 
 .input-group {
     position: relative;
-    transition: transform 0.2s;
+    transition: transform 0.2s ease; /* 크기 전환 효과 */
 }
 
 .input-group:hover {
-    transform: translateY(-5px);
+    transform: scale(1.02); /* 크기 확대 (1.05배) */
 }
+
+/* Resolution 필드를 Cut Name과 동일한 너비로 배치 */
+.resolution-group {
+    grid-column: 1 / span 1; /* 왼쪽 열 하나 차지 */
+}
+
+.resolution-inputs {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* 필드 간격 */
+    width: 100%; /* 전체 너비 사용 */
+}
+
+.resolution-inputs input[type="number"] {
+    flex: 1; /* 각 필드가 같은 크기로 너비 나눔 */
+}
+
+.resolution-inputs span {
+    font-size: 1em;
+    color: var(--text-color);
+    align-self: center; /* 'x' 기호 가운데 정렬 */
+}
+
 
 label {
     font-weight: 600;
@@ -236,7 +275,7 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
     box-shadow: 0 0 0 3px rgba(102, 102, 102, 0.2);
 }
 
-/* 변환 및 리셋 버튼 */
+/* 변환 및 리셋 버튼 컨테이너 */
 #convert-button-container {
     text-align: center;
     margin-top: 50px;
@@ -246,6 +285,7 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
     gap: 10px;
 }
 
+/* 변환, 저장, 리셋 버튼 스타일 */
 #convert-button, #save-preset-button, .reset-button {
     padding: 10px 20px;
     background: var(--button-bg);
@@ -255,25 +295,33 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
     cursor: pointer;
     font-size: 1em;
     font-weight: 600;
-    transition: background 0.3s, transform 0.2s;
+    transition: background 0.3s, transform 0.2s ease; /* 배경과 확대 전환 효과 */
 }
 
-#convert-button:hover, #save-preset-button:hover {
-    background: var(--button-bg-hover);
+/* 모든 버튼에 호버 시 확대 효과 적용 */
+#convert-button:hover, #save-preset-button:hover, .reset-button:hover {
+    transform: scale(1.03); /* 호버 시 1.05배 확대 */
+    background: var(--button-bg-hover); /* 호버 배경색 */
 }
 
-#convert-button:active, #save-preset-button:active {
-    transform: scale(0.98);
+/* 클릭 시 살짝 축소 */
+#convert-button:active, #save-preset-button:active, .reset-button:active {
+    transform: scale(1.01); /* 클릭 시 1.02배 축소 */
 }
 
 /* 프리셋 저장 버튼 */
 #save-preset-button {
     background-color: #b3ff00;
     color: #000000;
+    transition: background 0.3s, transform 0.2s ease; /* 배경과 확대 전환 효과 */
 }
 
 #save-preset-button:hover {
     background-color: #91cf00;
+    transform: scale(1.03); /* 확대 */
+}
+#save-preset-button:active {
+    transform: scale(1.01); /* 클릭 시 1.02배 축소 */
 }
 
 /* 리셋 버튼 */
@@ -285,6 +333,11 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
 .reset-button:hover {
     background-color: #FF0000;
     color: #FFFFFF;
+    transform: scale(1.03); /* 확대 */
+}
+
+.reset-button:active {
+    transform: scale(1.01); /* 클릭 시 1.02배 축소 */
 }
 
 /* 결과 컨테이너 */
@@ -318,7 +371,7 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
 
 
 #result:hover {
-    transform: translateY(-5px); /* hover시 부드럽게 이동 */
+    transform: scale(1.03); /* 확대 */
 }
 
 #copy-message {

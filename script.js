@@ -135,51 +135,54 @@ function createPresetButton(presetNumber) {
 
         // 현재 데이터를 현재 프리셋에 저장
         function saveCurrentToPreset() {
-            // 필드 값 가져오기
-            const projectName = document.getElementById('projectName').value.trim();
-            const product = document.getElementById('product').value.trim();
-            const cutName = document.getElementById('cut_name').value.trim();
+        // 필드 값 가져오기
+        const projectName = document.getElementById('projectName').value.trim();
+        const product = document.getElementById('product').value.trim();
+        const cutName = document.getElementById('cut_name').value.trim();
+        const frameNumberLength = parseInt(document.getElementById('frame-number').value) || 4; // frame number length 저장
 
-            // 필드 검증
-            if (!projectName || !product || !cutName) {
-                displayPresetMessage('No data to save.', false);
-                return;
-            }
-
-            // 현재 버전 상태 및 버전 번호 가져오기
-            const versionState = document.getElementById('version-state').value;
-            const versionNumber = document.getElementById('version').value;
-
-            // 기존 프리셋 데이터 가져오기 또는 새로 생성
-            let presetData = localStorage.getItem('preset' + currentPresetNumber);
-            if (presetData) {
-                presetData = JSON.parse(presetData);
-            } else {
-                presetData = {};
-            }
-
-            // 프리셋 데이터 업데이트
-            presetData.projectName = projectName;
-            presetData.product = product;
-            presetData.cut_name = cutName;
-            presetData.colorspace = document.getElementById('colorspace').value;
-            presetData.x_resolution = document.getElementById('x_resolution').value;
-            presetData.y_resolution = document.getElementById('y_resolution').value;
-            presetData.product_type = document.getElementById('product_type').value;
-            presetData.founder = document.getElementById('founder').value;
-            presetData.version_state = versionState;
-
-            // 버전 상태에 따른 버전 번호 업데이트
-            if (versionState === 'prev') {
-                presetData.version_prev = versionNumber;
-            } else if (versionState === 'final') {
-                presetData.version_final = versionNumber;
-            }
-
-            localStorage.setItem('preset' + currentPresetNumber, JSON.stringify(presetData));
-            displayPresetMessage('Preset ' + currentPresetNumber + ' saved.', true);
-            updateTooltip(currentPresetNumber);
+        // 필드 검증   
+        if (!projectName || !product || !cutName) {
+            displayPresetMessage('No data to save.', false);
+            return;
         }
+
+        // 현재 버전 상태 및 버전 번호 가져오기
+        const versionState = document.getElementById('version-state').value;
+        const versionNumber = document.getElementById('version').value;
+
+        // 기존 프리셋 데이터 가져오기 또는 새로 생성
+        let presetData = localStorage.getItem('preset' + currentPresetNumber);
+        if (presetData) {
+            presetData = JSON.parse(presetData);
+        } else {
+            presetData = {};
+        }
+
+        // 프리셋 데이터 업데이트
+        presetData.projectName = projectName;
+        presetData.product = product;
+        presetData.cut_name = cutName;
+        presetData.colorspace = document.getElementById('colorspace').value;
+        presetData.x_resolution = document.getElementById('x_resolution').value;
+        presetData.y_resolution = document.getElementById('y_resolution').value;
+        presetData.product_type = document.getElementById('product_type').value;
+        presetData.founder = document.getElementById('founder').value;
+        presetData.version_state = versionState;
+        presetData.frameNumberLength = frameNumberLength; // frame number length 저장
+
+        // 버전 상태에 따른 버전 번호 업데이트
+        if (versionState === 'prev') {
+            presetData.version_prev = versionNumber;
+        } else if (versionState === 'final') {
+            presetData.version_final = versionNumber;
+        }
+
+        localStorage.setItem('preset' + currentPresetNumber, JSON.stringify(presetData));
+        displayPresetMessage('Preset ' + currentPresetNumber + ' saved.', true);
+        updateTooltip(currentPresetNumber);
+    }
+
 
         // 메시지 표시
         function displayPresetMessage(message, isPositive) {
@@ -208,8 +211,11 @@ function createPresetButton(presetNumber) {
 
         // 프리셋 데이터 로드
         function loadPreset(presetNumber) {
+            // 현재 프리셋 번호 업데이트 및 표시 업데이트
             currentPresetNumber = presetNumber;
             updateCurrentPresetDisplay();
+
+            // 프리셋 데이터 로드
             let presetData = localStorage.getItem('preset' + presetNumber);
             if (presetData) {
                 presetData = JSON.parse(presetData);
@@ -222,16 +228,12 @@ function createPresetButton(presetNumber) {
                 document.getElementById('product_type').value = presetData.product_type || 'cgi';
                 document.getElementById('founder').value = presetData.founder || '';
                 document.getElementById('version-state').value = presetData.version_state || 'prev';
+                document.getElementById('frame-number').value = presetData.frameNumberLength || 4; // frame number length 로드
 
                 // 버전 상태에 따른 버전 번호 설정
                 const versionState = document.getElementById('version-state').value;
-                let versionNumber = 1;
-                if (versionState === 'prev') {
-                    versionNumber = presetData.version_prev || 1;
-                } else if (versionState === 'final') {
-                    versionNumber = presetData.version_final || 1;
-                }
-                document.getElementById('version').value = versionNumber;
+                let version = versionState === 'prev' ? presetData.version_prev : presetData.version_final;
+                document.getElementById('version').value = version || 1;
 
                 displayPresetMessage('Preset ' + presetNumber + ' loaded.', true);
             } else {
@@ -247,6 +249,7 @@ function createPresetButton(presetNumber) {
                 document.getElementById('founder').value = '';
                 document.getElementById('version-state').value = 'prev';
                 document.getElementById('version').value = 1;
+                document.getElementById('frame-number').value = 4; // 기본값 설정
             }
         }
 
@@ -347,6 +350,10 @@ function createPresetButton(presetNumber) {
             let versionNumber = document.getElementById('version').value;
             let versionFormatted = 'v' + ('000' + versionNumber).slice(-3);
         
+            // Frame Number Length 값 가져오기 (기본값은 4로 설정)
+            const frameNumberLength = parseInt(document.getElementById('frame-number').value) || 4;
+            const framePlaceholder = '#'.repeat(frameNumberLength);  // Frame Number Length에 맞춰 # 개수 설정
+        
             // 필드 수집
             const fields = [
                 document.getElementById('projectName').value,
@@ -380,7 +387,7 @@ function createPresetButton(presetNumber) {
         
             const nonEmptyFields = fields.filter(field => field && field.trim() !== '');
         
-            let result = nonEmptyFields.join('_') + '.####';
+            let result = nonEmptyFields.join('_') + '.' + framePlaceholder;
         
             document.getElementById('result').textContent = result;
         
@@ -409,9 +416,8 @@ function createPresetButton(presetNumber) {
                 // 업데이트된 버전 번호를 프리셋에 저장
                 saveCurrentToPreset();
             });
-        }
-        
-        
+        }        
+
 
         // 툴팁 내용 업데이트
        function updateTooltip(presetNumber) {

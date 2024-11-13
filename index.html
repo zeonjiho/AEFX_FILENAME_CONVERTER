@@ -1,3 +1,7 @@
+<!-- 업데이트 해야하는 사항
+버전과 Frame Number Length를 좌측에 한 줄로 배치, 파일 포맷 선택기 제작 
+-->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,8 +21,7 @@
             Filename converter and generator for VFX pipeline, based on Netflix naming conventions.
         </div>
         
-
-        <div class="version-info">Alpha 1.0.4
+        <div class="version-info">Alpha 1.0.5
         </div>
         
         <div id="template-example">
@@ -71,15 +74,15 @@
                 </select>
             </div>
     
-            <div class="input-group">
-                <label for="x_resolution">X Resolution</label>
-                <input type="number" id="x_resolution" placeholder="e.g., 1920" min="1">
-            </div>
-    
-            <div class="input-group">
-                <label for="y_resolution">Y Resolution</label>
-                <input type="number" id="y_resolution" placeholder="e.g., 1080" min="1">
-            </div>
+                <!-- Resolution 필드 그룹 -->
+    <div class="input-group resolution-group">
+        <label for="x_resolution">Resolution</label>
+        <div class="resolution-inputs">
+            <input type="number" id="x_resolution" placeholder="Width (x)" min="0">
+            <span>x</span>
+            <input type="number" id="y_resolution" placeholder="Height (y)" min="0">
+        </div>
+    </div>
     
             <div class="input-group">
                 <label for="product_type">Product Type</label>
@@ -106,7 +109,14 @@
                 <label for="version">Version</label>
                 <input type="number" id="version" placeholder="Enter version number" min="1" value="1">
             </div>
+            <div class="input-group">
+                <label for="frame-number">Frame Number Length</label>
+                <input type="number" id="frame-number" min="4" value="4">
+            </div>
         </div>
+
+        
+        
     
         <!-- 변환 및 리셋 버튼 -->
         <div id="convert-button-container">
@@ -132,6 +142,12 @@
     <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
         <!-- 텍스트는 동적으로 업데이트됩니다 -->
     </button>
+    
+    <div class="centered-small-text">
+        ⓒ 2024. <a href="https://www.instagram.com/zeonjiho/" class="bold-link">@zeonjiho</a> All rights reserved.
+    </div>
+
     <script src="script.js"></script>
+    
 </body>
 </html>
