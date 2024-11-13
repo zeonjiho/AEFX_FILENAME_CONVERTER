@@ -1,0 +1,384 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 테마를 위한 루트 변수 */
+:root {
+    --bg-color: #ffffff;
+    --text-color: #000000;
+    --input-bg: #f0f0f0;
+    --tooltip-bg: rgba(255, 255, 255, 0.05);
+    --input-border: #cccccc;
+    --button-bg: #e0e0e0;
+    --button-bg-hover: #d0d0d0;
+    --button-text-color: #333333;
+    --highlight-color: #666666;
+    --hover-color: #000000;
+    --selected-preset: #000000;
+    --selected-text-color: #ffffff;
+}
+
+[data-theme="dark"] {
+    --bg-color: #000000;
+    --text-color: #f0f0f0;
+    --input-bg: #1a1a1a;
+    --tooltip-bg: rgba(0, 0, 0, 0.4);
+    --input-border: #333333;
+    --button-bg: #333333;
+    --button-bg-hover: #4d4d4d;
+    --button-text-color: #f0f0f0;
+    --highlight-color: #999999;
+    --hover-color: #ffffff;
+    --selected-preset: #e0e0e0;
+    --selected-text-color: #000000;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+h2 {
+    text-align: center;
+    color: var(--text-color);
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    font-weight: 600;
+    /* 폰트 변경 */
+    font-family: 'Archivo', sans-serif;
+}
+
+.centered-small-text {
+    text-align: center;
+    color: var(--text-color);
+    font-size: small;
+    margin: 5px; /* 위아래, 좌우 모두 20px 여백 */
+}
+
+
+/* 버전 정보 */
+.version-info {
+    text-align: center;
+    font-size: 0.9em;
+    color: var(--text-color);
+    margin-bottom: 30px;
+    font-family: 'Source Code Pro', monospace;
+}
+
+#template-example {
+    background-color: var(--input-bg);
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: small;
+    color: var(--text-color);
+    border-left: 5px solid var(--highlight-color);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* 프리셋 버튼 */
+#preset-buttons {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#preset-buttons p {
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.presets-container {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.preset-button {
+    width: 40px;
+    height: 40px;
+    background-color: var(--button-bg);
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 600;
+    color: var(--button-text-color);
+    cursor: pointer;
+    transition: background 0.3s, color 0.3s;
+    position: relative;
+}
+
+.preset-button:hover {
+    background-color: var(--button-bg-hover);
+}
+
+/* 선택된 프리셋 버튼 */
+.selected-preset {
+    background-color: var(--selected-preset);
+    color: var(--selected-text-color);
+}
+
+/* 선택된 프리셋 버튼 호버 스타일 */
+.selected-preset:hover {
+    background-color: #b3ff00; /* 선택된 버튼의 호버 배경색 */
+    color: #000000; /* 선택된 버튼의 호버 텍스트 색상 */
+}
+
+/* 프리셋 툴팁 */
+.preset-tooltip {
+    display: none;
+    position: absolute;
+    bottom: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--tooltip-bg);
+    color: var(--text-color);
+    padding: 10px;
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-family: 'Source Code Pro', monospace;
+    white-space: nowrap;
+    backdrop-filter: blur(4px); /* 블러 효과 */
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    z-index: 1000;
+}
+
+.preset-button:hover .preset-tooltip {
+    display: block;
+    opacity: 1;
+}
+
+/* 프리셋 메시지 */
+#preset-message {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 1em;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+}
+
+/* 프리셋 추가/제거 버튼 */
+#add-remove-buttons {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.add-remove-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5em;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s;
+    margin: 0 5px;
+}
+
+.add-remove-button:hover {
+    color: var(--highlight-color);
+}
+
+/* 폼 컨테이너 */
+.form-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+.input-group {
+    position: relative;
+    transition: transform 0.2s;
+}
+
+.input-group:hover {
+    transform: translateY(-5px);
+}
+
+label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-color);
+    font-size: 1em;
+}
+
+input[type="text"], select, input[type="number"] {
+    width: 100%;
+    padding: 12px 15px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    font-size: 1em;
+    color: var(--text-color);
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+input[type="text"]:focus, select:focus, input[type="number"]:focus {
+    border-color: var(--highlight-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(102, 102, 102, 0.2);
+}
+
+/* 변환 및 리셋 버튼 */
+#convert-button-container {
+    text-align: center;
+    margin-top: 50px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+#convert-button, #save-preset-button, .reset-button {
+    padding: 10px 20px;
+    background: var(--button-bg);
+    color: var(--button-text-color);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background 0.3s, transform 0.2s;
+}
+
+#convert-button:hover, #save-preset-button:hover {
+    background: var(--button-bg-hover);
+}
+
+#convert-button:active, #save-preset-button:active {
+    transform: scale(0.98);
+}
+
+/* 프리셋 저장 버튼 */
+#save-preset-button {
+    background-color: #b3ff00;
+    color: #000000;
+}
+
+#save-preset-button:hover {
+    background-color: #91cf00;
+}
+
+/* 리셋 버튼 */
+.reset-button {
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+}
+
+.reset-button:hover {
+    background-color: #FF0000;
+    color: #FFFFFF;
+}
+
+/* 결과 컨테이너 */
+#result-container {
+    margin-top: 40px;
+    text-align: center;
+}
+
+#result {
+    display: inline-block;
+    padding: 20px;
+    background-color: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 6px;
+    font-family: 'Source Code Pro', monospace;
+    font-size: 1.2em;
+    color: var(--text-color);
+    position: relative;
+    transition: opacity 0.5s ease-in-out, transform 0.3s ease;; /* 페이드 인 효과 추가 */
+    opacity: 0; /* 기본 투명도 */
+    min-width: 300px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+#result.visible {
+    opacity: 1; /* 보이는 상태로 변경 */
+}
+
+
+#result:hover {
+    transform: translateY(-5px); /* hover시 부드럽게 이동 */
+}
+
+#copy-message {
+    opacity: 0; /* 기본적으로 숨김 */
+    color: var(--highlight-color);
+    font-size: 1em;
+    text-align: center;
+    transition: opacity 0.5s ease-in-out; /* 페이드 인/아웃 효과 */
+    margin-top: 20px;
+}
+
+#copy-message.visible {
+    opacity: 1; /* 보이는 상태 */
+}
+
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* 테마 전환 버튼 */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.3s;
+    z-index: 1000;
+    font-family: 'Source Code Pro', monospace;
+}
+
+.theme-toggle:hover {
+    color: var(--hover-color);
+}
+
+@media (max-width: 600px) {
+    .form-container {
+        grid-template-columns: 1fr;
+    }
+
+    h2 {
+        font-size: 2em;
+    }
+
+    #convert-button, #save-preset-button, .reset-button {
+        width: 100%;
+    }
+
+    .presets-container {
+        gap: 5px;
+    }
+
+    .preset-button {
+        width: 35px;
+        height: 35px;
+    }
+}
