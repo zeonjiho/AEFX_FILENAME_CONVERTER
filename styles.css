@@ -1,8 +1,4 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+/* 기존 CSS 코드 생략 없이 포함 */
 
 /* 테마를 위한 루트 변수 */
 :root {
@@ -74,7 +70,6 @@ h2 {
 .bold-link:hover {
     text-decoration: underline;  /* 호버 시 밑줄 추가 */
 }
-
 
 /* 버전 정보 */
 .version-info {
@@ -211,6 +206,21 @@ h2 {
     color: var(--highlight-color);
 }
 
+/* 체크박스 컨테이너 스타일 */
+.checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.checkbox-container label {
+    display: flex;
+    align-items: center;
+    margin-right: 10px;
+}
+
 /* 폼 컨테이너 */
 .form-container {
     display: grid;
@@ -249,7 +259,6 @@ h2 {
     align-self: center; /* 'x' 기호 가운데 정렬 */
 }
 
-
 label {
     font-weight: 600;
     display: block;
@@ -260,6 +269,7 @@ label {
 
 input[type="text"], select, input[type="number"] {
     width: 100%;
+    box-sizing: border-box;
     padding: 12px 15px;
     background-color: var(--input-bg);
     border: 1px solid var(--input-border);
@@ -320,6 +330,7 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
     background-color: #91cf00;
     transform: scale(1.03); /* 확대 */
 }
+
 #save-preset-button:active {
     transform: scale(1.01); /* 클릭 시 1.02배 축소 */
 }
@@ -369,7 +380,6 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
     opacity: 1; /* 보이는 상태로 변경 */
 }
 
-
 #result:hover {
     transform: scale(1.03); /* 확대 */
 }
@@ -386,7 +396,6 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
 #copy-message.visible {
     opacity: 1; /* 보이는 상태 */
 }
-
 
 @keyframes fadeOut {
     0% { opacity: 1; }
@@ -412,6 +421,64 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
 .theme-toggle:hover {
     color: var(--hover-color);
 }
+
+#checkbox-toggle-container {
+    display:grid;
+    justify-content: center; /* 가로 중앙 정렬 */
+    align-items: center; /* 세로 중앙 정렬 */
+    margin-top: 20px; /* 원하는 만큼 상단 여백 추가 */
+    height: auto; /* 필요 시 높이를 지정 */
+
+}
+
+/* 토글 버튼 스타일 */
+.toggle-button {
+    
+    background-color:var(--bg-color); /* 초록색 배경 */
+    color: var(--text-color);
+    border: none;
+    border-radius: 0px;
+    padding: 5px 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-family: 'Source Code Pro', monospace;
+}
+
+
+/* 호버 시 버튼 효과 */
+.toggle-button:hover {
+    background-color: var(--bg-color);
+    color: #b3ff00;
+    transform: scale(1.02); /* 확대 효과 */
+}
+
+/* 버튼을 누를 때 효과 */
+.toggle-button:active {
+    transform: scale(0.98); /* 살짝 축소 */
+}
+
+/* 체크박스 컨테이너 기본 스타일 */
+.checkbox-container {
+    display: flex;
+    padding: 10px;
+    border: 1px var(--input-border);
+    border-radius: 10px;
+    margin-top: 10px;
+    opacity: 1;
+    font-size: small;
+    font-family: 'Source Code Pro', monospace;
+}
+
+/* 숨겨진 상태 스타일 */
+.checkbox-container.hidden {
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+
 
 @media (max-width: 600px) {
     .form-container {
