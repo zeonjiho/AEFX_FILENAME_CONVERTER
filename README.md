@@ -57,8 +57,67 @@ The **AEFX Filename Converter** tool provides a streamlined interface to generat
 ## Mobile Responsiveness
 - **Responsive Design**: Adapts layout and button sizes for screens under 600px wide.
 
+# Naming Convention Generator
 
-# AEFX_FILENAME_CONVERTER
+프로젝트 네이밍 컨벤션을 생성하고 관리하는 도구입니다.
+
+## 주요 기능
+
+### 1. 프리셋 관리
+- 최대 15개의 프리셋 저장 가능
+- 프리셋 추가/삭제
+- 현재 프리셋 저장
+- 프리셋 초기화
+- 모든 프리셋 초기화
+- 프리셋 내보내기/가져오기 (JSON 파일)
+
+### 2. 입력 필드
+- Project Name
+- Product
+- Cut Name
+- Colorspace (sRGB/ACES)
+- Resolution (X/Y)
+- Product Type (CGI/PHOTO)
+- Founder
+- Version State (prev/final)
+- Version Number
+- Frame Number Length
+
+### 3. 사용자 인터페이스
+- 다크/라이트 모드 지원
+- 반응형 디자인 (모바일 지원)
+- 폼 필드 표시/숨김 설정
+- 툴팁 가이드
+- 애니메이션 효과
+- 드래그 앤 드롭 JSON 파일 가져오기
+
+### 4. 결과 출력
+- 설정된 형식에 따른 네이밍 생성
+- 원클릭 복사 기능
+- 복사 완료 알림
+
+### 5. 데이터 관리
+- 로컬 스토리지 자동 저장
+- 변경사항 추적
+- 프리셋 전환 시 저장 확인
+
+### 6. 접근성
+- 키보드 접근성 지원
+- 고대비 색상 지원
+- Source Code Pro 폰트 사용으로 가독성 향상
+
+## 사용 방법
+
+1. 프리셋 선택 또는 생성
+2. 필요한 필드 입력
+3. Convert & Copy 버튼 클릭
+4. 생성된 네이밍 자동 복사
+
+## 주의사항
+
+- 프리셋 전환 시 저장되지 않은 변경사항이 있다면 확인 메시지가 표시됩니다
+- 프리셋 초기화는 되돌릴 수 없습니다
+- JSON 파일 가져오기 시 기존 프리셋은 모두 삭제됩니다
 
 VFX 파이프라인을 위한 파일명 변환기 및 생성기, 넷플릭스 네이밍 규칙을 기반으로 설계되었습니다.
 

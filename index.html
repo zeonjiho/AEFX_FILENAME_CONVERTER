@@ -14,11 +14,11 @@
     <div class="container">
         <h2>AEFX FILENAME CONVERTER</h2>
         
-        <div class="centered-small-text">
+        <div class="centered-small-text-header">
             Filename converter and generator for VFX pipeline, based on Netflix naming conventions.
         </div>
         
-        <div class="version-info">Alpha 1.1.1</div>
+        <div class="version-info">Alpha 1.2.0</div>
         
         <!--<div id="template-example">
             Example: &lt;projectName&gt;_&lt;product&gt;_&lt;cutName&gt;_&lt;colorspace&gt;_&lt;xResolution&gt;x&lt;yResolution&gt;_&lt;productType&gt;_&lt;founder&gt;_&lt;versionState&gt;_&lt;version&gt;.####
@@ -145,6 +145,26 @@
             <button class="reset-button" onclick="resetAllData()">Reset All</button>
         </div>
         
+      
+<div class="preset-manager">
+  <div class="preset-controls">
+    <button id="exportAllPresets">Export All Presets</button>
+    <button id="importPresets">Import All Presets</button>
+    <input type="file" id="importInput" accept=".json" style="display: none;">
+  </div>
+  
+  <div class="export-dialog" id="exportDialog" style="display: none;">
+    <div class="dialog-content">
+      <h3>Save Preset File</h3>
+      <input type="text" id="presetFileName" placeholder="Enter to File Name">
+      <div class="dialog-buttons">
+        <button id="confirmExport">Export</button>
+        <button id="cancelExport">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
         <!-- 결과 컨테이너 -->
         <div id="result-container">
             <div id="result"></div>
@@ -152,13 +172,14 @@
         </div>
     </div>
 
-    <!-- 테마 전환 버튼 -->
+    <!-- 테마 토글 버튼 -->
     <button class="theme-toggle" id="theme-toggle" title="Toggle Theme">
         <!-- 텍스트는 동적으로 업데이트됩니다 -->
     </button>
     
     <div class="centered-small-text">
         ⓒ 2024. <a href="https://www.instagram.com/zeonjiho/" class="bold-link">@zeonjiho</a> All rights reserved.
+        <a href="https://github.com/zeonjiho/AEFX_FILENAME_CONVERTER" class="bold-link">GitHub</a>
     </div>
 
     <script src="script.js"></script>

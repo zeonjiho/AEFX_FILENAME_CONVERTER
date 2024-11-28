@@ -1,3 +1,38 @@
+document.getElementById('exportAllPresets').addEventListener('click', function(e) {
+    const dialog = document.getElementById('exportDialog');
+    const dialogContent = dialog.querySelector('.dialog-content');
+    
+    // 클릭 위치 저장
+    const clickX = e.clientX;
+    const clickY = e.clientY;
+    
+    // 다이얼로그 표시
+    dialog.style.display = 'block';
+    
+    // 다이얼로그 크기 계산
+    const dialogWidth = dialogContent.offsetWidth;
+    const dialogHeight = dialogContent.offsetHeight;
+    
+    // 화면 경계 체크
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    
+    // X 위치 계산 (화면 왼쪽/오른쪽 경계 체크)
+    let leftPos = clickX - (dialogWidth / 2);
+    leftPos = Math.max(20, Math.min(leftPos, viewportWidth - dialogWidth - 20));
+    
+    // Y 위치 계산 (항상 마우스 위에 표시)
+    let topPos = clickY - dialogHeight - 20; // 마우스 위 20px 간격
+    
+    // 상단 경계 체크
+    if (topPos < 20) {
+        topPos = clickY + 20; // 공간이 부족하면 마우스 아래로
+    }
+    
+    // 위치 적용
+    dialogContent.style.left = leftPos + 'px';
+    dialogContent.style.top = topPos + 'px';
+});
 // 프리셋 번호 관리
 let currentPresetNumber = 1;
 let totalPresets = 1;
@@ -175,7 +210,7 @@ function saveCurrentToPreset() {
     const cutName = document.getElementById('cut_name').value.trim();
     const frameNumberLength = parseInt(document.getElementById('frame-number').value) || 4; // frame number length 저장
 
-    // 필드 검증   
+    // 필드 검증
     if (!projectName || !product || !cutName) {
         displayPresetMessage('저장할 데이터가 없습니다.', false);
         return;
@@ -373,7 +408,7 @@ document.getElementById('version-state').addEventListener('change', function() {
 
 // 버전 번호 실시간 업데이트
 document.getElementById('version').addEventListener('input', function() {
-    // 업데이트된 버전 번호를 프리셋 데이터에 저장
+    // 업데이트된 버전 번호를 프리셋 데이터에 장
     const versionNumber = this.value;
     const versionState = document.getElementById('version-state').value;
     let presetData = localStorage.getItem('preset' + currentPresetNumber);
@@ -564,7 +599,10 @@ function convertAndCopy() {
     }
 
     if (document.getElementById('include-founder').checked) {
-        fields.push(founderInput.value);
+        const founderValue = founderInput.value.trim(); // 공백 제거
+        if (founderValue) { // 값이 있을 때만 추가
+            fields.push(founderValue);
+        }
     }
 
     if (document.getElementById('include-versionState').checked) {
@@ -580,7 +618,7 @@ function convertAndCopy() {
 
     document.getElementById('result').textContent = result;
 
-    // `#result`에 `visible` 클래스 추가하여 페이드 인 효과 적용
+    // `#result`에 `visible` 클래스 추가하여 페드 인 효과 적용
     const resultElement = document.getElementById('result');
     resultElement.classList.add('visible'); // `visible` 클래스 추가로 페이드 인
 
@@ -692,6 +730,160 @@ prefersDarkScheme.addEventListener('change', (e) => {
     }
 });
 
+// 프리셋 매니저 클래스
+class PresetManager {
+    constructor() {
+        this.initializeEventListeners();
+        this.initializeDragAndDrop();
+    }
+
+    initializeEventListeners() {
+        document.getElementById('exportAllPresets').addEventListener('click', () => this.showExportDialog());
+        document.getElementById('importPresets').addEventListener('click', () => document.getElementById('importInput').click());
+        document.getElementById('importInput').addEventListener('change', (e) => this.handleImport(e));
+        document.getElementById('confirmExport').addEventListener('click', () => this.exportAllPresets());
+        document.getElementById('cancelExport').addEventListener('click', () => this.hideExportDialog());
+    }
+
+    initializeDragAndDrop() {
+        // 드래그 오버레이 생성 및 추가
+        const overlay = document.createElement('div');
+        overlay.className = 'drag-overlay';
+        overlay.style.display = 'none'; // 기본적으로 숨김
+        const overlayText = document.createElement('div');
+        overlayText.className = 'drag-overlay-text';
+        overlayText.textContent = 'Drop JSON file here';
+        overlay.appendChild(overlayText);
+        document.body.appendChild(overlay);
+
+        // 전체 document에 대한 기본 이벤트 방지
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            document.body.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+            });
+        });
+
+        // 드래그 시작
+        document.body.addEventListener('dragenter', (e) => {
+            overlay.style.display = 'flex'; // 드래그 시작 시 오버레이 표시
+        });
+
+        // 드래그 오버
+        document.body.addEventListener('dragover', (e) => {
+            overlay.style.display = 'flex'; // 드래그 오버 시 오버레이 표시
+        });
+
+        // 드래그 떠남
+        document.body.addEventListener('dragleave', (e) => {
+            if (!e.relatedTarget || !document.body.contains(e.relatedTarget)) {
+                overlay.style.display = 'none'; // 드래그 떠날 때 오버레이 숨김
+            }
+        });
+
+        // 드롭
+        document.body.addEventListener('drop', (e) => {
+            overlay.style.display = 'none'; // 드롭 시 오버레이 숨김
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.toLowerCase().endsWith('.json')) {
+                this.handleImport({ target: { files: [file] } });
+            } else {
+                alert('JSON 파일만 가져올 수 있습니다.');
+            }
+        });
+    }
+
+    showExportDialog() {
+        document.getElementById('exportDialog').style.display = 'flex';
+    }
+
+    hideExportDialog() {
+        document.getElementById('exportDialog').style.display = 'none';
+    }
+
+    exportAllPresets() {
+        const fileName = document.getElementById('presetFileName').value.trim();
+
+        // 파일명 검증
+        if (!fileName) {
+            alert('파일 이름을 입력해주세요.');
+            return;
+        }
+
+        const totalPresets = parseInt(localStorage.getItem('totalPresets')) || 1;
+        const presets = {};
+
+        for (let i = 1; i <= totalPresets; i++) {
+            const presetData = localStorage.getItem('preset' + i);
+            if (presetData) {
+                presets['preset' + i] = JSON.parse(presetData);
+            }
+        }
+
+        if (Object.keys(presets).length === 0) {
+            alert('내보낼 프리셋이 없습니다.');
+            return;
+        }
+
+        const exportData = {
+            presets: presets,
+            totalPresets: totalPresets,
+            exportDate: new Date().toISOString()
+        };
+
+        const blob = new Blob([JSON.stringify(exportData, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${fileName}.json`;
+        a.click();
+        
+        URL.revokeObjectURL(url);
+        this.hideExportDialog();
+    }
+
+    handleImport(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    const importData = JSON.parse(e.target.result);
+                    if (importData.presets && importData.totalPresets) {
+                        // 기존 프리셋 삭제
+                        const existingTotalPresets = parseInt(localStorage.getItem('totalPresets')) || 1;
+                        for (let i = 1; i <= existingTotalPresets; i++) {
+                            localStorage.removeItem('preset' + i);
+                        }
+
+                        // 프리셋 가져오기
+                        for (let key in importData.presets) {
+                            localStorage.setItem(key, JSON.stringify(importData.presets[key]));
+                        }
+                        localStorage.setItem('totalPresets', importData.totalPresets);
+
+                        // 프리셋 재초기화
+                        totalPresets = importData.totalPresets;
+                        initializePresets();
+                        loadPreset(1);
+
+                        alert('프리셋을 성공적으로 가져왔습니다.');
+                    } else {
+                        alert('프리셋 파일 형식이 올바르지 않습니다.');
+                    }
+                } catch (error) {
+                    alert('프리셋 파일을 불러오는데 실패했습니다.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    }
+}
+
+const presetManager = new PresetManager();
+
+
 // 페이지 로드 시 데이터 로드
 window.onload = function() {
     // 결과 영역 초기화
@@ -704,3 +896,4 @@ window.onload = function() {
 
     isDirty = false; // 페이지 로드 시 변경 사항 없음
 };
+

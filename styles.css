@@ -9,11 +9,15 @@
     --input-border: #cccccc;
     --button-bg: #e0e0e0;
     --button-bg-hover: #d0d0d0;
+    --button-bg-hidden: var(--bg-color);
     --button-text-color: #333333;
     --highlight-color: #666666;
     --hover-color: #000000;
     --selected-preset: #000000;
     --selected-text-color: #ffffff;
+    --border-width: 1px;
+    --border-color: var(--input-border);
+    --border-style: solid;
 }
 
 [data-theme="dark"] {
@@ -22,13 +26,15 @@
     --input-bg: #1a1a1a;
     --tooltip-bg: rgba(0, 0, 0, 0.4);
     --input-border: #333333;
-    --button-bg: #333333;
-    --button-bg-hover: #4d4d4d;
+    --button-bg: #1a1a1a;
+    --button-bg-hidden: var(--bg-color);
+    --button-bg-hover: #272727;
     --button-text-color: #f0f0f0;
     --highlight-color: #999999;
     --hover-color: #ffffff;
     --selected-preset: #e0e0e0;
     --selected-text-color: #000000;
+    --border-color: var(--input-border);
 }
 
 body {
@@ -150,7 +156,7 @@ h2 {
     transform: scale(1.01); /* 클릭 시 1.02배 축소 */
 }
 
-/* 프리셋 툴팁 */
+/* 프��셋 툴팁 */
 .preset-tooltip {
     display: none;
     position: absolute;
@@ -160,7 +166,7 @@ h2 {
     background-color: var(--tooltip-bg);
     color: var(--text-color);
     padding: 10px;
-    border: 1px solid var(--input-border);
+    border: var(--border-width) var(--border-style) var(--border-color);
     border-radius: 6px;
     font-size: 0.9em;
     font-family: 'Source Code Pro', monospace;
@@ -206,19 +212,42 @@ h2 {
     color: var(--highlight-color);
 }
 
-/* 체크박스 컨테이너 스타일 */
+/* 체크박스 컨테이너 */
 .checkbox-container {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     justify-content: center;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
+    padding: 15px;
+    border: none; /* 테두리 제거 */
+    background: none; /* 배경색 제거 */
+    transition: all 0.3s ease;
 }
 
+/* 체크박스 레이블 */
 .checkbox-container label {
     display: flex;
     align-items: center;
-    margin-right: 10px;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 4px;
+    background: none; /* 배경색 제거 */
+    color: var(--text-color);
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.checkbox-container label:hover {
+    color: var(--hover-color); /* 호버 시 텍스트 색상 변경 */
+    transform: scale(1.03);
+}
+
+/* 체크박스 자체의 스타일 */
+.checkbox-container input[type="checkbox"] {
+    margin-right: 5px;
+    cursor: pointer;
 }
 
 /* 폼 컨테이너 */
@@ -237,46 +266,238 @@ h2 {
     transform: scale(1.02); /* 크기 확대 (1.05배) */
 }
 
-/* Resolution 필드를 Cut Name과 동일한 너비로 배치 */
-.resolution-group {
-    grid-column: 1 / span 1; /* 왼쪽 열 하나 차지 */
-}
-
+/* Resolution 입력 필드 스타일 유지 */
 .resolution-inputs {
     display: flex;
     align-items: center;
-    gap: 5px; /* 필드 간격 */
-    width: 100%; /* 전체 너비 사용 */
+    gap: 5px;
+    width: 100%;
 }
 
 .resolution-inputs input[type="number"] {
-    flex: 1; /* 각 필드가 같은 크기로 너비 나눔 */
+    flex: 1;
 }
 
 .resolution-inputs span {
     font-size: 1em;
     color: var(--text-color);
-    align-self: center; /* 'x' 기호 가운데 정렬 */
+    align-self: center;
 }
 
+/* 프리셋 매니저 컨테이너 스타일 */
+.preset-manager {
+    margin: 0px 0;
+    padding: 20px;
+    transition: all 0.2s ease;
+    position: relative; /* 드래그 오버레이를 위한 포지셔닝 */
+}
+
+/* 드래그 오버레이 스타일 */
+.drag-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+    z-index: 9999;
+}
+
+/* 드래그 오버레이 텍스트 */
+.drag-overlay-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    font-family: 'Source Code Pro', monospace;
+    font-weight: 700;
+    font-size: 1.5em;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 12px;
+    border: 2px dashed #b3ff00;
+}
+
+/* 드래그 중버 상태 */
+body.drag-over .drag-overlay {
+    display: block;
+}
+
+/* 프리셋 컨트롤 버튼 컨테이너 */
+.preset-controls {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* 프리셋 컨트롤 버튼 기본 스타일 */
+.preset-controls button {
+    padding: 12px 24px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Source Code Pro', monospace;
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+}
+
+/* 프리셋 컨트롤 버튼 호버 과 */
+.preset-controls button:hover {
+    background-color: #b3ff00;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 내보내기 다이얼로그 오버레이 */
+.export-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    z-index: 1000;
+}
+
+/* 다이얼로그 내용 컨테이너 */
+.dialog-content {
+    position: fixed;
+    background-color: var(--tooltip-bg);
+    padding: 25px;
+    border-radius: 12px;
+    min-width: 320px;
+    border: var(--border-width) var(--border-style) var(--border-color);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.2s ease;
+    backdrop-filter: blur(12px);
+    font-family: 'Source Code Pro', monospace;
+}
+
+/* 라이트 모드에서의 다이얼로그 배경 */
+:root .dialog-content {
+    background-color: rgba(255, 255, 255, 0.7); /* 라이트 모드에서 더 밝은 배경 */
+}
+
+/* 다크 모드에서의 다이얼로그 배경 */
+[data-theme="dark"] .dialog-content {
+    background-color: var(--tooltip-bg); /* 다크 모드는 기존 배경색 유지 */
+}
+
+/* 프리셋 파일명 입력 필드 */
+#presetFileName {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: var(--border-width) var(--border-style) var(--border-color);
+    border-radius: 8px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+    font-family: 'Source Code Pro', monospace;
+    transition: all 0.2s ease;
+}
+
+/* 프리셋 파일명 입력 필드 포커스 효과 */
+#presetFileName:focus {
+    border-color: #b3ff00;
+    box-shadow: 0 0 0 3px rgba(179, 255, 0, 0.2);
+    outline: none;
+}
+
+/* 다이얼로그 버튼 컨테이너 */
+.dialog-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+/* 다이얼로그 버튼 공통 스타일 */
+#confirmExport,
+#cancelExport {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s ease; /* 트랜지션 통일 */
+    font-family: 'Source Code Pro', monospace;
+}
+
+/* Confirm Export 버튼 스타일 */
+#confirmExport {
+    background-color: #b3ff00;
+    color: #000000;
+}
+
+#confirmExport:hover {
+    background-color: #91cf00;
+    transform: scale(1.03);
+}
+
+#confirmExport:active {
+    transform: scale(1.01);
+}
+
+/* Cancel 버튼 스타일 */
+#cancelExport {
+    background-color: var(--button-bg);
+    color: var(--button-text-color);
+}
+
+#cancelExport:hover {
+    background-color: #ff3b30;
+    color: white;
+    transform: scale(1.03); /* Export와 동일한 확대 효과 */
+}
+
+#cancelExport:active {
+    transform: scale(1.01); /* Export와 동일한 축소 효과 */
+}
+
+/* 레이블 스타일 - 기존 Inter 폰트 유지 */
+/* 다크 모드에서의 Cancel 버튼 호버 효과 */
+[data-theme="dark"] #cancelExport:hover {
+    background-color: #ff453a; /* 다크 모드용 빨간색 */
+    color: white;
+}
+
+/* 다이얼로그 버튼 호버 효과 */
+.dialog-buttons button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* 레이블 스타일 - 기존 Inter 폰트 유지 */
 label {
     font-weight: 600;
     display: block;
     margin-bottom: 8px;
     color: var(--text-color);
     font-size: 1em;
+    font-family: 'Inter', sans-serif; /* 기존 폰트로 복원 */
 }
 
-input[type="text"], select, input[type="number"] {
+/* 입력 필드 공통 스타일 */
+input[type="text"], 
+input[type="number"], 
+select {
     width: 100%;
     box-sizing: border-box;
     padding: 12px 15px;
     background-color: var(--input-bg);
-    border: 1px solid var(--input-border);
+    border: var(--border-width) var(--border-style) var(--border-color);
     border-radius: 6px;
     font-size: 1em;
     color: var(--text-color);
     transition: border-color 0.3s, box-shadow 0.3s;
+    font-family: 'Source Code Pro', monospace; /* 입력 필드만 Source Code Pro 적용 */
 }
 
 input[type="text"]:focus, select:focus, input[type="number"]:focus {
@@ -361,7 +582,7 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
     display: inline-block;
     padding: 20px;
     background-color: var(--input-bg);
-    border: 1px solid var(--input-border);
+    border: var(--border-width) var(--border-style) var(--border-color);
     border-radius: 6px;
     font-family: 'Source Code Pro', monospace;
     font-size: 1.2em;
@@ -433,37 +654,59 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
 
 /* 토글 버튼 스타일 */
 .toggle-button {
-    
-    background-color:var(--bg-color); /* 초록색 배경 */
+    background: none;  /* 배경 제거 */
     color: var(--text-color);
     border: none;
-    border-radius: 0px;
-    padding: 5px 5px;
-    font-size: 14px;
-    font-weight: bold;
+    padding: 10px 20px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    font-weight: 600;
+    margin-bottom: 10px;
+    transition: all 0.2s ease;
     font-family: 'Source Code Pro', monospace;
 }
 
-
-/* 호버 시 버튼 효과 */
 .toggle-button:hover {
-    background-color: var(--bg-color);
-    color: #b3ff00;
-    transform: scale(1.02); /* 확대 효과 */
+    color: var(--hover-color);
+    transform: scale(1.03);
 }
 
-/* 버튼을 누를 때 효과 */
-.toggle-button:active {
-    transform: scale(0.98); /* 살짝 축소 */
+/* 체크박스 컨테이너 */
+#checkbox-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 20px;
+    padding: 0;  /* 패딩 제거 */
+    border: none;
+    background: none;
+    font-family: 'Source Code Pro', monospace;
+}
+
+/* 체크박스 레이블 */
+#checkbox-container label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    background: none;
+    color: var(--text-color);
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Source Code Pro', monospace;
+}
+
+#checkbox-container label:hover {
+    color: var(--hover-color);
+    transform: scale(1.03);
 }
 
 /* 체크박스 컨테이너 기본 스타일 */
 .checkbox-container {
     display: flex;
     padding: 10px;
-    border: 1px var(--input-border);
+    border: var(--border-width) var(--border-style) var(--border-color);
     border-radius: 10px;
     margin-top: 10px;
     opacity: 1;
@@ -478,7 +721,35 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
     overflow: hidden;
 }
 
+/* select 요소 기본 스타일 */
+select {
+    -webkit-appearance: none; /* Safari 기본 스타일 제거 */
+    -moz-appearance: none; /* Firefox 기본 스타일 제거 */
+    appearance: none; /* 기본 스타일 제거 */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.7em center;
+    background-size: 1em;
+    padding-right: 2.5em; /* 화살표 아이콘을 위한 여백 */
+    cursor: pointer;
+}
 
+/* Safari에서 select 요소의 둥근 모서리 제거 */
+select::-webkit-input-placeholder {
+    line-height: normal !important;
+}
+
+/* Safari에서 포커스 시 파란 테두리 제거 */
+select:focus {
+    outline: none;
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 0 3px rgba(102, 102, 102, 0.2);
+}
+
+/* 다크모드에서 select 화살표 색상 조정 */
+[data-theme="dark"] select {
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+}
 
 @media (max-width: 600px) {
     .form-container {
@@ -501,4 +772,111 @@ input[type="text"]:focus, select:focus, input[type="number"]:focus {
         width: 35px;
         height: 35px;
     }
+}
+
+/* Export/Import 버튼 스타일 */
+#exportAllPresets,
+#importPresets {
+    background-color: var(--button-bg-hidden); /* 기본 버튼 배경색으로 변경 */
+    color: var(--button-text-color); /* 기본 버튼 텍스트 색상으로 변경 */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: 'Source Code Pro', monospace;
+}
+
+/* Export/Import 버튼 호버 효과 */
+#exportAllPresets:hover,
+#importPresets:hover {
+    background-color: var(--button-bg);
+    transform: scale(1.03);
+    box-shadow: 0;
+}
+
+/* Export/Import 버튼 클릭 효과 */
+#exportAllPresets:active,
+#importPresets:active {
+    transform: scale(1.01);
+}
+
+/* 푸터 컨테이너 */
+.footer-container {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 15px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 테마 토글 버튼 - 기존 위치 유지 */
+.theme-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.3s;
+    z-index: 1001; /* 푸터보다 위에 표시 */
+    font-family: 'Source Code Pro', monospace;
+}
+
+/* 푸터 텍스트 */
+.centered-small-text {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: var(--text-color);
+    font-size: small;
+    padding: 8px 0;
+    margin: 0;
+    z-index: 999;
+    backdrop-filter: blur(30px);
+    background-color: rgba(0, 0, 0, 0.01);
+    line-height: 1.5;
+}
+
+.centered-small-text-header {
+    position: relative;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: var(--text-color);
+    font-size: small;
+    padding: 8px 0;
+    margin: 0;
+    z-index: 1000;
+    line-height: 1.5;
+}
+
+
+/* 테마 토글 버튼 */
+.theme-toggle {
+    position: fixed;
+    bottom: 8px; /* centered-small-text의 패딩과 동일하게 맞춤 */
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 1em;
+    cursor: pointer;
+    color: var(--text-color);
+    transition: color 0.3s;
+    z-index: 1001;
+    font-family: 'Source Code Pro', monospace;
+    padding: 0;
+    margin: 0;
+    line-height: 1.5; /* 텍스트 라인과 동일하게 맞춤 */
 }
